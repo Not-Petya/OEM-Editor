@@ -46,14 +46,14 @@ namespace OEMEditor
             txtModel.Text = "ITM";
             txtSupportHours.Text = "Mo. - Fr.: 8:00-12:00 || 13:00-17:00";
             txtSupportPhone.Text = "+49 831 5752760";
-            txtSupportUrl.Text = "https://itm-technologies.de/";
+            txtSupportUrl.Text = "mailto:support@itm-technologies.de";
 
-            string destinationPath = "C:\\ITM\\itm.bmp";
+            string destinationPath = "C:\\itm\\itm.bmp";
             try
             {
-                if (!Directory.Exists("C:\\ITM"))
+                if (!Directory.Exists("C:\\itm"))
                 {
-                    Directory.CreateDirectory("C:\\ITM");
+                    Directory.CreateDirectory("C:\\itm");
                 }
 
                 using (Stream resourceStream = Application.GetResourceStream(new Uri("pack://application:,,,/img/itm.bmp")).Stream)
@@ -69,13 +69,21 @@ namespace OEMEditor
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error copying file: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowPopupMessage("Error copying file: " + ex.Message);
             }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            SetUpdatedInformation();
+            try
+            {
+                SetUpdatedInformation();
+                ShowPopupMessage("Information successfully updated.");
+            }
+            catch (Exception ex)
+            {
+                ShowPopupMessage("Error updating information: " + ex.Message);
+            }
         }
 
         private void SetLogoRegistryValue(string imagePath)
@@ -87,7 +95,7 @@ namespace OEMEditor
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error updating registry: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowPopupMessage("Error updating registry: " + ex.Message);
             }
         }
 
@@ -121,6 +129,17 @@ namespace OEMEditor
 
             string cplPath = Path.Combine(Environment.SystemDirectory, "control.exe");
             System.Diagnostics.Process.Start(cplPath, "/name Microsoft.System");
+        }
+
+        private void ShowPopupMessage(string message)
+        {
+            PopupMessage.Text = message;
+            PopupOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void PopupOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            PopupOverlay.Visibility = Visibility.Collapsed;
         }
     }
 }
